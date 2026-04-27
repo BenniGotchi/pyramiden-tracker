@@ -1,0 +1,17 @@
+{
+  "name": "Mein Pyramiden Tracker",
+  "short_name": "Tracker",
+  "description": "Täglicher Lebensmittel-Tracker nach der DGE-Pyramide",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234CAF50'/%3E%3Ctext y='.85em' x='.1em' font-size='75'%3E%F0%9F%8D%8E%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
