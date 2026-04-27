@@ -1,107 +1,147 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pyramiden Tracker</title>
     
-	<link rel="manifest" href="manifest.json">
-	<link rel="icon" type="image/png" href="icon.png">
-	<link rel="apple-touch-icon" href="icon.png">
-	
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
 
     <style>
-        body { font-family: 'Comic Sans MS', cursive, sans-serif; background-color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background-color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+            color: #333;
+        }
         
-        /* Pyramiden-Layout */
-        .pyramid-container { display: flex; flex-direction: column-reverse; align-items: center; gap: 5px; }
-        .row { display: flex; gap: 5px; }
-
-        /* Die einzelnen Bausteine */
-        .box { filter: grayscale(50%); width: 60px; height: 60px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; position: relative; }
-        .box input { display: none; } /* Checkbox verstecken */
-        .icon { font-size: 30px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
-
-        /* Farben der Zeilen (nach Bildvorlage) */
-        .row-6 .box { background-color: #c5e1a5; } /* Getränke - Hellgrün */
-        .row-5 .box { background-color: #8bc34a; } /* Gemüse/Obst - Grün */
-        .row-4 .box { background-color: #afb42b; } /* Getreide - Dunkelgrün */
-        .row-3 .box { background-color: #fff176; } /* Milch/Fisch - Gelb */
-        .row-2 .box { background-color: #fff176; } /* Öle/Nüsse - Gelb */
-        .row-1 .box { background-color: #e57373; border-color: #c62828; } /* Extras - Rot */
-
-        /* Aktivierter Zustand */
-        .box input:checked + .icon { filter: grayscale(0%); opacity: 1; transform: scale(1.2); }
-        .box input:checked { filter: grayscale(0%); background-color: white; } /* Highlight-Effekt */
-
         .header { text-align: center; margin-bottom: 20px; }
-        .reset-btn { margin-top: 30px; padding: 10px 20px; border-radius: 20px; border: 2px solid #333; background: none; cursor: pointer; font-weight: bold; }
+        #today { font-weight: bold; color: #4CAF50; margin-top: 5px; }
+
+        .pyramid-container { 
+            display: flex; 
+            flex-direction: column-reverse; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        .row { display: flex; gap: 8px; }
+        .item { cursor: pointer; }
+        .item input { display: none; }
+
+        .box { 
+            width: 55px; 
+            height: 55px; 
+            border: 2px solid #eee; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 10px;
+            transition: all 0.3s ease; 
+            /* Inaktiver Zustand: Halb transparent und grau-stichig */
+            filter: grayscale(0.6);
+            opacity: 1; 
+        }
+
+        .icon { 
+            font-size: 28px; 
+            filter: grayscale(100%); 
+            transition: 0.3s; 
+        }
+
+        /* --- FARBEN DER REIHEN (Auch im inaktiven Zustand leicht sichtbar) --- */
+        .row-6 .box { background-color: #c5e1a5; } /* Getränke */
+        .row-5 .box { background-color: #8bc34a; } /* Gemüse/Obst */
+        .row-4 .box { background-color: #afb42b; } /* Getreide */
+        .row-3 .box { background-color: #fff176; } /* Milch/Protein */
+        .row-2 .box { background-color: #ffe082; } /* Öle/Nüsse */
+        .row-1 .box { background-color: #ef9a9a; } /* Extras */
+
+        /* --- AKTIVIERTER ZUSTAND --- */
+        /* Box wird voll sichtbar */
+        input:checked + .box { 
+            filter: grayscale(0);
+            opacity: 1;
+            border-color: rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Icon wird bunt */
+        input:checked + .box .icon { 
+            filter: grayscale(0%); 
+            transform: scale(1.1); 
+        }
+
+        .reset-btn { 
+            margin-top: 40px; 
+            padding: 12px 25px; 
+            border-radius: 25px; 
+            border: 1px solid #ddd; 
+            background: #fdfdfd; 
+            cursor: pointer; 
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>Mein Pyramiden-Tracker</h2>
-        <p id="today"></p>
+        <h1>Mein Pyramiden-Tracker</h1>
+        <div id="today"></div>
     </div>
 
-    <div class="pyramid-container" id="pyramid">
-        <!-- Zeile 6: Getränke -->
+    <div class="pyramid-container">
         <div class="row row-6">
-            <label class="box"><input type="checkbox" id="w1"><span class="icon">💧</span></label>
-            <label class="box"><input type="checkbox" id="w2"><span class="icon">💧</span></label>
-            <label class="box"><input type="checkbox" id="w3"><span class="icon">💧</span></label>
-            <label class="box"><input type="checkbox" id="w4"><span class="icon">💧</span></label>
-            <label class="box"><input type="checkbox" id="w5"><span class="icon">💧</span></label>
-            <label class="box"><input type="checkbox" id="w6"><span class="icon">💧</span></label>
+            <label class="item"><input type="checkbox" id="w1"><div class="box"><span class="icon">💧</span></div></label>
+            <label class="item"><input type="checkbox" id="w2"><div class="box"><span class="icon">💧</span></div></label>
+            <label class="item"><input type="checkbox" id="w3"><div class="box"><span class="icon">💧</span></div></label>
+            <label class="item"><input type="checkbox" id="w4"><div class="box"><span class="icon">💧</span></div></label>
+            <label class="item"><input type="checkbox" id="w5"><div class="box"><span class="icon">💧</span></div></label>
+            <label class="item"><input type="checkbox" id="w6"><div class="box"><span class="icon">💧</span></div></label>
         </div>
-        <!-- Zeile 5: Gemüse & Obst -->
         <div class="row row-5">
-            <label class="box"><input type="checkbox" id="v1"><span class="icon">🥦</span></label>
-            <label class="box"><input type="checkbox" id="v2"><span class="icon">🥕</span></label>
-            <label class="box"><input type="checkbox" id="v3"><span class="icon">🥦</span></label>
-            <label class="box"><input type="checkbox" id="v4"><span class="icon">🍎</span></label>
-            <label class="box"><input type="checkbox" id="v5"><span class="icon">🍎</span></label>
+            <label class="item"><input type="checkbox" id="v1"><div class="box"><span class="icon">🥦</span></div></label>
+            <label class="item"><input type="checkbox" id="v2"><div class="box"><span class="icon">🥕</span></div></label>
+            <label class="item"><input type="checkbox" id="v3"><div class="box"><span class="icon">🥦</span></div></label>
+            <label class="item"><input type="checkbox" id="v4"><div class="box"><span class="icon">🍎</span></div></label>
+            <label class="item"><input type="checkbox" id="v5"><div class="box"><span class="icon">🍎</span></div></label>
         </div>
-        <!-- Zeile 4: Getreide -->
         <div class="row row-4">
-            <label class="box"><input type="checkbox" id="g1"><span class="icon">🌾</span></label>
-            <label class="box"><input type="checkbox" id="g2"><span class="icon">🍞</span></label>
-            <label class="box"><input type="checkbox" id="g3"><span class="icon">🌾</span></label>
-            <label class="box"><input type="checkbox" id="g4"><span class="icon">🥔</span></label>
+            <label class="item"><input type="checkbox" id="g1"><div class="box"><span class="icon">🌾</span></div></label>
+            <label class="item"><input type="checkbox" id="g2"><div class="box"><span class="icon">🍞</span></div></label>
+            <label class="item"><input type="checkbox" id="g3"><div class="box"><span class="icon">🌾</span></div></label>
+            <label class="item"><input type="checkbox" id="g4"><div class="box"><span class="icon">🥔</span></div></label>
         </div>
-        <!-- Zeile 3: Milch & Fleisch -->
         <div class="row row-3">
-            <label class="box"><input type="checkbox" id="m1"><span class="icon">🧀</span></label>
-            <label class="box"><input type="checkbox" id="m2"><span class="icon">🥛</span></label>
-            <label class="box"><input type="checkbox" id="f1"><span class="icon">🍗</span></label>
+            <label class="item"><input type="checkbox" id="m1"><div class="box"><span class="icon">🧀</span></div></label>
+            <label class="item"><input type="checkbox" id="m2"><div class="box"><span class="icon">🥛</span></div></label>
+            <label class="item"><input type="checkbox" id="f1"><div class="box"><span class="icon">🍗</span></div></label>
         </div>
-        <!-- Zeile 2: Öle & Nüsse -->
         <div class="row row-2">
-            <label class="box"><input type="checkbox" id="o1"><span class="icon">🫙</span></label>
-            <label class="box"><input type="checkbox" id="o2"><span class="icon">🫒</span></label>
-            <label class="box"><input type="checkbox" id="n1"><span class="icon">🥜</span></label>
+            <label class="item"><input type="checkbox" id="o1"><div class="box"><span class="icon">🫙</span></div></label>
+            <label class="item"><input type="checkbox" id="o2"><div class="box"><span class="icon">🫒</span></div></label>
+            <label class="item"><input type="checkbox" id="n1"><div class="box"><span class="icon">🥜</span></div></label>
         </div>
-        <!-- Zeile 1: Extras (Süßes/Salziges) -->
         <div class="row row-1">
-            <label class="box"><input type="checkbox" id="x1"><span class="icon">🍫</span></label>
+            <label class="item"><input type="checkbox" id="x1"><div class="box"><span class="icon">🍫</span></div></label>
         </div>
     </div>
 
-    <button class="reset-btn" onclick="resetAll()">Alles zurücksetzen</button>
+    <button class="reset-btn" onclick="resetAll()">Tag manuell zurücksetzen</button>
 
     <script>
         const dateStr = new Date().toLocaleDateString('de-DE');
         document.getElementById('today').innerText = dateStr;
-
         const checks = document.querySelectorAll('input[type="checkbox"]');
 
-        // Laden & Reset bei neuem Tag
-        function load() {
-            if (localStorage.getItem('last_day') !== dateStr) {
+        function init() {
+            if (localStorage.getItem('saved_date') !== dateStr) {
                 resetAll();
-                localStorage.setItem('last_day', dateStr);
+                localStorage.setItem('saved_date', dateStr);
             } else {
                 checks.forEach(c => {
                     if(localStorage.getItem(c.id) === 'true') c.checked = true;
@@ -109,9 +149,10 @@
             }
         }
 
-        // Speichern
         checks.forEach(c => {
-            c.addEventListener('change', () => localStorage.setItem(c.id, c.checked));
+            c.addEventListener('change', () => {
+                localStorage.setItem(c.id, c.checked);
+            });
         });
 
         function resetAll() {
@@ -120,8 +161,7 @@
                 localStorage.removeItem(c.id);
             });
         }
-
-        load();
+        init();
     </script>
 </body>
 </html>
